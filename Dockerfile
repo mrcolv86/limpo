@@ -13,9 +13,6 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Run database migration
-RUN npx drizzle-kit push
-
 # Build the application
 RUN npm run build
 

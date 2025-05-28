@@ -44,6 +44,16 @@ app.use((req, res, next) => {
   // Executar o seed do banco de dados antes de iniciar o servidor
   try {
     await seed();
+  if (process.env.NODE_ENV === "production") {
+    try {
+      const { push } = await import("drizzle-kit");
+      await push();
+      console.log("Migrações aplicadas com sucesso.");
+    } catch (err) {
+      console.error("Erro ao aplicar migrações:", err);
+    }
+  }
+
     console.log("Seed do banco de dados concluído com sucesso!");
   } catch (error) {
     console.error("Erro ao executar seed do banco de dados:", error);

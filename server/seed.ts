@@ -12,7 +12,6 @@ import bcrypt from "bcryptjs";
 import { eq } from "drizzle-orm";
 
 export async function seed() {
-  // Usuários
   const adminExists = await db.select().from(users).where(eq(users.username, "admin"));
   if (adminExists.length === 0) {
     await db.insert(users).values([
@@ -44,7 +43,6 @@ export async function seed() {
     console.log("Usuários criados.");
   }
 
-  // Configuração da cervejaria
   await db.insert(brewerySettings).values({
     name: "Cervejaria Don Tap",
     logoUrl: "https://example.com/logo.png",
@@ -52,7 +50,6 @@ export async function seed() {
     language: "pt",
   });
 
-  // Categorias
   const insertedCategories = await db.insert(categories).values([
     { name: "Cervejas", description: "Variedades de cervejas artesanais" },
     { name: "Petiscos", description: "Acompanhamentos e porções" },
@@ -61,7 +58,6 @@ export async function seed() {
   const cervejasCategory = insertedCategories.find(c => c.name === "Cervejas");
   const petiscosCategory = insertedCategories.find(c => c.name === "Petiscos");
 
-  // Produtos
   await db.insert(products).values([
     {
       name: "IPA da Casa",
@@ -93,11 +89,10 @@ export async function seed() {
     }
   ]);
 
-  // Mesas
   await db.insert(tables).values([
-    { name: "Mesa 1", slug: "mesa_01" },
-    { name: "Mesa 2", slug: "mesa_02" },
-    { name: "Mesa 3", slug: "mesa_03" },
+    { name: "Mesa 1", slug: "mesa_01", number: 1 },
+    { name: "Mesa 2", slug: "mesa_02", number: 2 },
+    { name: "Mesa 3", slug: "mesa_03", number: 3 },
   ]);
 
   console.log("Seed completo executado com sucesso.");

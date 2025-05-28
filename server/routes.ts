@@ -1672,3 +1672,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   return httpServer;
 }
+
+import qrcode from "qrcode";
+import { eq } from "drizzle-orm";
+import { db } from "../shared/db";
+import { tables } from "../shared/schema";
+import { Router } from "express";
+
+export const qrRouter = Router();
+
+qrRouter.get("/api/tables/:slug/qrcode", async (req, res) => {
+  const { slug } = req.params;
+
+  try {
+    const mesa = await db.select().from(tables).where(eq(tables.slug, slug));
+    if (!mesa.length) return res.status(404).send("Mesa não encontrada");
+
+    const baseUrl = process.env.BASE_URL || "https://projeto-biertap.up.railway.app";
+    const url = `${baseUrl}/mesa/${slug}`;
+
+    const qrImage = await qrcode.toBuffer(url);
+    res.setHeader("Content-Type", "image/png");
+    res.send(qrImage);
+  } catch (err) {
+    console.error("Erro ao gerar QR Code:", err);
+    res.status(500).send("Erro interno ao gerar QR Code");
+  }
+});

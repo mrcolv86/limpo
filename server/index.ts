@@ -1,5 +1,6 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
+import { qrRouter } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { seed } from "./seed";
 import { execSync } from "child_process";
@@ -54,6 +55,7 @@ app.use((req, res, next) => {
   }
 
   const server = await registerRoutes(app);
+  app.use(qrRouter);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     console.error("Unhandled error:", err);

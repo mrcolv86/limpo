@@ -1,6 +1,9 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
-import { setupVite, serveStatic, log } from "./vite";
+import { log } from "./vite";
+
+let serveStatic: any = () => {};
+let setupVite: any = () => {};
 import { seed } from "./seed";
 
 const app = express();
@@ -46,7 +49,17 @@ app.use((req, res, next) => {
     console.error("Erro ao executar seed do banco de dados:", error);
   }
   
-  const server = await registerRoutes(app);
+  if (process.env.NODE_ENV === "development") {
+    const vite = await import("./vite");
+    setupVite = vite.setupVite;
+    setupVite(app);
+} else {
+    const vite = await import("./vite");
+    serveStatic = vite.serveStatic;
+    serveStatic(app);
+}
+
+const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
